@@ -1,289 +1,318 @@
-import React, { useState } from 'react';
-import { AlertCircle, CheckCircle2, Info, ArrowRight, Calculator, Activity, Stethoscope } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>台灣健保生物製劑給付審查工具</title>
+  <!-- 載入 Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 載入 React 與 Babel (讓瀏覽器能直接執行 JSX) -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-gray-50">
+  <div id="root"></div>
 
-const NHITool = () => {
-  const [activeTab, setActiveTab] = useState('AS');
-  const [selectedDrug, setSelectedDrug] = useState('Bimzelx');
+  <script type="text/babel">
+    const { useState } = React;
 
-  const tabs = [
-    { id: 'AS', name: '僵直性脊椎炎 (AS)' },
-    { id: 'PsA-P', name: '乾癬性周邊關節炎 (PsA)' },
-    { id: 'PsA-A', name: '乾癬性脊椎病變 (PsA)' },
-    { id: 'PsO', name: '斑塊型乾癬 (PsO)' },
-    { id: 'PsO-E', name: '慢性紅皮症乾癬 (PsO-E)' }
-  ];
+    // 定義圖示元件 (SVG)
+    const AlertCircle = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>;
+    const CheckCircle2 = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>;
+    const Info = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>;
+    const ArrowRight = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>;
+    const Calculator = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>;
+    const Activity = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>;
+    const Stethoscope = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>;
 
-  const drugs = [
-    { id: 'Bimzelx', name: 'Bimzelx (本能適)' },
-    { id: 'Skyrizi', name: 'Skyrizi (喜開理)' },
-    { id: 'Tremfya', name: 'Tremfya (特諾雅)' },
-    { id: 'Stelara', name: 'Stelara (喜達諾)' }
-  ];
+    const NHITool = () => {
+      const [activeTab, setActiveTab] = useState('AS');
+      const [selectedDrug, setSelectedDrug] = useState('Bimzelx');
 
-  const criteriaData = {
-    'AS': {
-      general: [
-        'HLA-B27 陽性 (檢附報告影本)。',
-        '符合 1984 年修定的僵直性關節炎診斷條件 (三需符合二)：下背痛及晨僵持續3個月以上、腰椎活動受限、胸廓擴張受限。',
-        'X光檢查有薦腸關節炎：雙側性二級以上，或單側性三級以上。',
-        '曾使用過至少 2 種 NSAIDs 充分治療療效不彰。',
-        '活動性疾病持續四週以上：需連續二次檢查 BASDAI ≥ 6、ESR > 28 mm/1 hr 且 CRP > 1 mg/dL。'
-      ],
-      efficacy: '治療 12 週評估 BASDAI：出現 50% 以上的進步或減少 2 分以上。需每 12 週評估一次。'
-    },
-    'PsA-P': {
-      general: [
-        '經內科/風濕免疫專科醫師診斷為乾癬性關節炎，且曾經皮膚科確診為乾癬。',
-        '三個或是三個以上的疼痛關節及腫脹關節 (至少間隔一個月連續兩次評估符合)。',
-        '已先使用 NSAIDs 及 DMARDs 治療。',
-        '曾使用過至少 2 種 DMARDs 進行充分的治療但療效不彰。'
-      ],
-      efficacy: '治療 12 週後評估，四項指標中至少有二項改善 (需含疼痛或腫脹關節總數改善)，且皆無惡化。'
-    },
-    'PsA-A': {
-      general: [
-        '經專科醫師診斷為乾癬性關節炎，且曾經皮膚科確診為乾癬。',
-        '三條件需符合二項：下背痛及晨僵持續3個月以上、腰椎前屈活動受限、胸廓擴張受限。',
-        'X光檢查需有薦腸關節炎：單側性二級以上。',
-        '必須曾使用過至少 2 種 NSAIDs 進行充分治療療效不彰。',
-        '活動性疾病持續四週以上：連續二次檢查 BASDAI ≥ 6、ESR > 28 且 CRP > 1。'
-      ],
-      efficacy: '初次使用者治療 12 週評估 BASDAI：出現 50% 以上的進步或減少 2 分以上。需每 12 週評估一次。'
-    },
-    'PsO': {
-      general: [
-        '符合全身慢性中、重度之乾癬 (檢附至少 6 個月病歷影本，治療滿 3 個月)。',
-        '乾癬面積暨嚴重度指數 (PASI) ≥ 10。',
-        '符合照光治療無效 (檢附 3 個月照光劑量記錄)。',
-        '符合其他全身性治療無效 (至少 2 種系統性用藥如 Acitretin, MTX 等)。'
-      ],
-      efficacy: '於初次療程經過 6 個月治療後，PASI 或體表面積改善達 50%。'
-    },
-    'PsO-E': {
-      general: [
-        '符合範圍 ≥ 75% 體表面積，且病史超過 1 年[cite: 29]。',
-        '以 cyclosporin 足量 (5mg/kg/d) 治療 6 個月以上，停藥未滿 3 個月即復發到 PASI > 10 或體表面積 > 30[cite: 29]。',
-        '以 methotrexate 及 acitretin 治療無效[cite: 29]。',
-        'PASI ≥ 10 或範圍 ≥ 10% 體表面積[cite: 29]。'
-      ],
-      efficacy: '初次療程第 12 週 (ustekinumab 為第 16 週) 評估時至少有 PASI 25 療效[cite: 30]。再次申請須達 PASI 50。治療 2 年後若 PASI ≤ 10 需暫緩續用[cite: 30, 31]。'
-    }
-  };
+      const tabs = [
+        { id: 'AS', name: '僵直性脊椎炎 (AS)' },
+        { id: 'PsA-P', name: '乾癬性周邊關節炎 (PsA)' },
+        { id: 'PsA-A', name: '乾癬性脊椎病變 (PsA)' },
+        { id: 'PsO', name: '斑塊型乾癬 (PsO)' },
+        { id: 'PsO-E', name: '慢性紅皮症乾癬 (PsO-E)' }
+      ];
 
-  const renderDrugSpecificInfo = () => {
-    if (selectedDrug === 'Bimzelx') {
-      return (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-5 mt-6 shadow-sm">
-          <h3 className="flex items-center text-lg font-bold text-blue-800 mb-3">
-            <CheckCircle2 className="w-5 h-5 mr-2" />
-            Bimzelx (本能適) 專屬給付優勢
-          </h3>
-          <ul className="space-y-2 text-blue-900">
-            {activeTab.startsWith('PsO') ? (
-              <>
-                <li className="flex items-start"><ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> <b>專屬維持劑量：</b> 起始於第 0, 4, 8, 12, 16 週投予 320mg，之後進入維持期 <b>每 8 週投予 320mg</b>。</li>
-                <li className="flex items-start"><ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> <b>早期續用門檻：</b> 於初次療程之第 16 週評估時，<b>至少有 PASI 25 療效</b> 即可過關。</li>
-                <li className="flex items-start"><ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> <b>常規續用門檻：</b> 重複療程再次申請時，與初次治療前之療效 <b>達 PASI 50</b> 即可續用，留存率高。</li>
-              </>
-            ) : (
-              <>
-                <li className="flex items-start"><ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> <b>穩定施打：</b> 每次使用劑量為 160mg，<b>每 4 週投予 160mg</b> 劑量。</li>
-                <li className="flex items-start"><ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> <b>前線優勢：</b> 於 PsA 治療位階具優勢，不需像 IL-23 抑制劑受限於必須先失敗其他生物製劑。</li>
-              </>
-            )}
-          </ul>
-        </div>
-      );
-    }
+      const drugs = [
+        { id: 'Bimzelx', name: 'Bimzelx (本能適)' },
+        { id: 'Skyrizi', name: 'Skyrizi (喜開理)' },
+        { id: 'Tremfya', name: 'Tremfya (特諾雅)' },
+        { id: 'Stelara', name: 'Stelara (喜達諾)' }
+      ];
 
-    if (['Skyrizi', 'Tremfya', 'Stelara'].includes(selectedDrug)) {
-      return (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-5 mt-6 shadow-sm">
-          <h3 className="flex items-center text-lg font-bold text-red-800 mb-3">
-            <AlertCircle className="w-5 h-5 mr-2" />
-            給付限制注意 ({selectedDrug})
-          </h3>
-          <ul className="space-y-2 text-red-900">
-            {activeTab.startsWith('PsA') ? (
-              <li className="flex items-start">
-                <ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> 
-                <b>後線條款限制：</b> 申請 IL-23 抑制劑 <b>必須符合抗腫瘤壞死因子 (anti-TNF)、secukinumab、ixekizumab (IL-17)、JAK 等未達療效或無法耐受</b> 之條件。相較於 Bimzelx，給付順位處於後線。
-              </li>
-            ) : activeTab === 'PsO' && selectedDrug === 'Skyrizi' ? (
-              <li className="flex items-start">
-                <ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> 
-                <b>高標續用門檻：</b> risankizumab 於第 16 週須先行評估 <b>至少有 PASI 75 療效</b>，再次申請亦須達 PASI 75；對比 Bimzelx 的 PASI 25/50，面臨更高的斷藥風險。
-              </li>
-            ) : (
-              <li className="flex items-start">
-                <ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> 需符合常規生物製劑給付規範。
-              </li>
-            )}
-          </ul>
-        </div>
-      );
-    }
-    return null;
-  };
+      const criteriaData = {
+        'AS': {
+          general: [
+            'HLA-B27 陽性 (檢附報告影本)。',
+            '符合 1984 年修定的僵直性關節炎診斷條件 (三需符合二)：下背痛及晨僵持續3個月以上、腰椎活動受限、胸廓擴張受限。',
+            'X光檢查有薦腸關節炎：雙側性二級以上，或單側性三級以上。',
+            '曾使用過至少 2 種 NSAIDs 充分治療療效不彰。',
+            '活動性疾病持續四週以上：需連續二次檢查 BASDAI ≥ 6、ESR > 28 mm/1 hr 且 CRP > 1 mg/dL。'
+          ],
+          efficacy: '治療 12 週評估 BASDAI：出現 50% 以上的進步或減少 2 分以上。需每 12 週評估一次。'
+        },
+        'PsA-P': {
+          general: [
+            '經內科/風濕免疫專科醫師診斷為乾癬性關節炎，且曾經皮膚科確診為乾癬。',
+            '三個或是三個以上的疼痛關節及腫脹關節 (至少間隔一個月連續兩次評估符合)。',
+            '已先使用 NSAIDs 及 DMARDs 治療。',
+            '曾使用過至少 2 種 DMARDs 進行充分的治療但療效不彰。'
+          ],
+          efficacy: '治療 12 週後評估，四項指標中至少有二項改善 (需含疼痛或腫脹關節總數改善)，且皆無惡化。'
+        },
+        'PsA-A': {
+          general: [
+            '經專科醫師診斷為乾癬性關節炎，且曾經皮膚科確診為乾癬。',
+            '三條件需符合二項：下背痛及晨僵持續3個月以上、腰椎前屈活動受限、胸廓擴張受限。',
+            'X光檢查需有薦腸關節炎：單側性二級以上。',
+            '必須曾使用過至少 2 種 NSAIDs 進行充分治療療效不彰。',
+            '活動性疾病持續四週以上：連續二次檢查 BASDAI ≥ 6、ESR > 28 且 CRP > 1。'
+          ],
+          efficacy: '初次使用者治療 12 週評估 BASDAI：出現 50% 以上的進步或減少 2 分以上。需每 12 週評估一次。'
+        },
+        'PsO': {
+          general: [
+            '符合全身慢性中、重度之乾癬 (檢附至少 6 個月病歷影本，治療滿 3 個月)。',
+            '乾癬面積暨嚴重度指數 (PASI) ≥ 10。',
+            '符合照光治療無效 (檢附 3 個月照光劑量記錄)。',
+            '符合其他全身性治療無效 (至少 2 種系統性用藥如 Acitretin, MTX 等)。'
+          ],
+          efficacy: '於初次療程經過 6 個月治療後，PASI 或體表面積改善達 50%。'
+        },
+        'PsO-E': {
+          general: [
+            '符合範圍 ≥ 75% 體表面積，且病史超過 1 年。',
+            '以 cyclosporin 足量 (5mg/kg/d) 治療 6 個月以上，停藥未滿 3 個月即復發到 PASI > 10 或體表面積 > 30。',
+            '以 methotrexate 及 acitretin 治療無效。',
+            'PASI ≥ 10 或範圍 ≥ 10% 體表面積。'
+          ],
+          efficacy: '初次療程第 12 週 (ustekinumab 為第 16 週) 評估時至少有 PASI 25 療效。再次申請須達 PASI 50。治療 2 年後若 PASI ≤ 10 需暫緩續用。'
+        }
+      };
 
-  const renderEmbeddedForms = () => {
-    if (activeTab === 'PsO' || activeTab === 'PsO-E') {
-      return (
-        <div className="mt-6 border border-gray-200 rounded-lg overflow-hidden">
-          <div className="bg-gray-100 px-4 py-3 border-b border-gray-200 flex items-center">
-            <Calculator className="w-5 h-5 mr-2 text-gray-600" />
-            <h4 className="font-bold text-gray-800">附表二十四之三：乾癬面積暨嚴重度指數 (PASI)[cite: 28]</h4>
-          </div>
-          <div className="p-4 bg-white text-sm text-gray-700">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <strong className="text-gray-900">1. 嚴重度 (Severity) 0-4分：</strong>
-                <ul className="list-disc pl-5 mt-1 space-y-1">
-                  <li>發紅 (Erythema, E)[cite: 28]</li>
-                  <li>病灶厚度 (Thickness/Induration, I)[cite: 28]</li>
-                  <li>脫屑狀況 (Desquamation, D)[cite: 28]</li>
-                </ul>
-              </div>
-              <div>
-                <strong className="text-gray-900">2. 乾癬面積 (Area) 0-6分：</strong>
-                <p className="mt-1">0%, &lt;10%(1), 10-29%(2), 30-49%(3), 50-69%(4), 70-89%(5), 90-100%(6)[cite: 28]。</p>
-              </div>
-            </div>
-            <div className="mt-4 p-3 bg-gray-50 rounded border border-gray-200 font-mono text-xs overflow-x-auto text-gray-800">
-              PASI = 0.1*(E_h+I_h+D_h)*A_h + 0.3*(E_t+I_t+D_t)*A_t + 0.2*(E_u+I_u+D_u)*A_u + 0.4*(E_l+I_l+D_l)*A_l[cite: 28]
-            </div>
-          </div>
-        </div>
-      );
-    }
-    
-    if (activeTab === 'PsA-P') {
-      return (
-        <div className="mt-6 border border-gray-200 rounded-lg overflow-hidden">
-          <div className="bg-gray-100 px-4 py-3 border-b border-gray-200 flex items-center">
-            <Stethoscope className="w-5 h-5 mr-2 text-gray-600" />
-            <h4 className="font-bold text-gray-800">附表二十二之二 & 二十二之三：乾癬性關節炎評估表</h4>
-          </div>
-          <div className="p-4 bg-white text-sm text-gray-700 space-y-4">
-            <div>
-              <strong className="text-gray-900 block mb-1">關節評估指標：</strong>
-              <p>評估 78 個可能疼痛關節及 76 個可能腫脹關節；另包含醫師與病人整體評估 (0-5分)。</p>
-            </div>
-            <div>
-              <strong className="text-gray-900 block mb-1">DMARDs 標準目標劑量 (充分治療門檻)：</strong>
-              <ul className="grid grid-cols-2 gap-2 mt-1">
-                <li>• Sulfasalazine: 2g/天</li>
-                <li>• Methotrexate: 15 mg/週</li>
-                <li>• Cyclosporine: 3-5 mg/kg/天</li>
-                <li>• Leflunomide: 20 mg/天</li>
+      const renderDrugSpecificInfo = () => {
+        if (selectedDrug === 'Bimzelx') {
+          return (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-5 mt-6 shadow-sm">
+              <h3 className="flex items-center text-lg font-bold text-blue-800 mb-3">
+                <CheckCircle2 className="w-5 h-5 mr-2" />
+                Bimzelx (本能適) 專屬給付優勢
+              </h3>
+              <ul className="space-y-2 text-blue-900">
+                {activeTab.startsWith('PsO') ? (
+                  <>
+                    <li className="flex items-start"><ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> <b>專屬維持劑量：</b> 起始於第 0, 4, 8, 12, 16 週投予 320mg，之後進入維持期 <b>每 8 週投予 320mg</b>。</li>
+                    <li className="flex items-start"><ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> <b>早期續用門檻：</b> 於初次療程之第 16 週評估時，<b>至少有 PASI 25 療效</b> 即可過關。</li>
+                    <li className="flex items-start"><ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> <b>常規續用門檻：</b> 重複療程再次申請時，與初次治療前之療效 <b>達 PASI 50</b> 即可續用，留存率高。</li>
+                  </>
+                ) : (
+                  <>
+                    <li className="flex items-start"><ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> <b>穩定施打：</b> 每次使用劑量為 160mg，<b>每 4 週投予 160mg</b> 劑量。</li>
+                    <li className="flex items-start"><ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> <b>前線優勢：</b> 於 PsA 治療位階具優勢，不需像 IL-23 抑制劑受限於必須先失敗其他生物製劑。</li>
+                  </>
+                )}
               </ul>
             </div>
-          </div>
-        </div>
-      );
-    }
+          );
+        }
 
-    if (activeTab === 'AS' || activeTab === 'PsA-A') {
-      return (
-        <div className="mt-6 border border-gray-200 rounded-lg overflow-hidden">
-          <div className="bg-gray-100 px-4 py-3 border-b border-gray-200 flex items-center">
-            <Activity className="w-5 h-5 mr-2 text-gray-600" />
-            <h4 className="font-bold text-gray-800">活動性疾病與療效評估指標</h4>
-          </div>
-          <div className="p-4 bg-white text-sm text-gray-700">
-            <p>需連續記錄二次檢查 (間隔至少四週)：</p>
-            <ul className="list-disc pl-5 mt-2 space-y-1">
-              <li><strong>BASDAI 分數</strong> (需 ≥ 6)</li>
-              <li><strong>ESR</strong> (需 > 28 mm/1 hr)</li>
-              <li><strong>CRP</strong> (需 > 1 mg/dL)</li>
-            </ul>
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
-
-  return (
-    <div className="max-w-6xl mx-auto p-6 bg-gray-50 min-h-screen font-sans">
-      <header className="mb-8">
-        <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">台灣健保生物製劑給付審查工具 (進階版)</h1>
-      </header>
-
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-1 space-y-4">
-          <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">選擇比較藥品</h2>
-            <div className="space-y-2">
-              {drugs.map(drug => (
-                <button
-                  key={drug.id}
-                  onClick={() => setSelectedDrug(drug.id)}
-                  className={`w-full text-left px-4 py-3 rounded-lg border transition-all duration-200 font-medium ${
-                    selectedDrug === drug.id
-                      ? 'bg-indigo-50 border-indigo-500 text-indigo-700 shadow-sm ring-1 ring-indigo-500'
-                      : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  {drug.name}
-                </button>
-              ))}
+        if (['Skyrizi', 'Tremfya', 'Stelara'].includes(selectedDrug)) {
+          return (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-5 mt-6 shadow-sm">
+              <h3 className="flex items-center text-lg font-bold text-red-800 mb-3">
+                <AlertCircle className="w-5 h-5 mr-2" />
+                給付限制注意 ({selectedDrug})
+              </h3>
+              <ul className="space-y-2 text-red-900">
+                {activeTab.startsWith('PsA') ? (
+                  <li className="flex items-start">
+                    <ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> 
+                    <b>後線條款限制：</b> 申請 IL-23 抑制劑 <b>必須符合抗腫瘤壞死因子 (anti-TNF)、secukinumab、ixekizumab (IL-17)、JAK 等未達療效或無法耐受</b> 之條件。相較於 Bimzelx，給付順位處於後線。
+                  </li>
+                ) : activeTab === 'PsO' && selectedDrug === 'Skyrizi' ? (
+                  <li className="flex items-start">
+                    <ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> 
+                    <b>高標續用門檻：</b> risankizumab 於第 16 週須先行評估 <b>至少有 PASI 75 療效</b>，再次申請亦須達 PASI 75；對比 Bimzelx 的 PASI 25/50，面臨更高的斷藥風險。
+                  </li>
+                ) : (
+                  <li className="flex items-start">
+                    <ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> 需符合常規生物製劑給付規範。
+                  </li>
+                )}
+              </ul>
             </div>
-          </div>
-        </div>
+          );
+        }
+        return null;
+      };
 
-        <div className="lg:col-span-3">
-          <div className="flex flex-wrap gap-2 mb-6">
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
-                  activeTab === tab.id
-                    ? 'bg-indigo-600 text-white shadow-md'
-                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
-                }`}
-              >
-                {tab.name}
-              </button>
-            ))}
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="p-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                <Info className="w-6 h-6 mr-2 text-indigo-600" />
-                {tabs.find(t => t.id === activeTab).name} 健保申請條件
-              </h2>
-              
-              <div className="space-y-6">
-                <div>
-                  <h4 className="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">初次申請條件 (需符合所有項目)</h4>
-                  <ul className="space-y-3">
-                    {criteriaData[activeTab].general.map((item, idx) => (
-                      <li key={idx} className="flex items-start text-gray-700 leading-relaxed">
-                        <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 mr-3"></span>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
+      const renderEmbeddedForms = () => {
+        if (activeTab === 'PsO' || activeTab === 'PsO-E') {
+          return (
+            <div className="mt-6 border border-gray-200 rounded-lg overflow-hidden">
+              <div className="bg-gray-100 px-4 py-3 border-b border-gray-200 flex items-center">
+                <Calculator className="w-5 h-5 mr-2 text-gray-600" />
+                <h4 className="font-bold text-gray-800">附表二十四之三：乾癬面積暨嚴重度指數 (PASI)</h4>
+              </div>
+              <div className="p-4 bg-white text-sm text-gray-700">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <strong className="text-gray-900">1. 嚴重度 (Severity) 0-4分：</strong>
+                    <ul className="list-disc pl-5 mt-1 space-y-1">
+                      <li>發紅 (Erythema, E)</li>
+                      <li>病灶厚度 (Thickness/Induration, I)</li>
+                      <li>脫屑狀況 (Desquamation, D)</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <strong className="text-gray-900">2. 乾癬面積 (Area) 0-6分：</strong>
+                    <p className="mt-1">0%, &lt;10%(1), 10-29%(2), 30-49%(3), 50-69%(4), 70-89%(5), 90-100%(6)。</p>
+                  </div>
                 </div>
-
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                  <h4 className="text-md font-semibold text-gray-800 mb-2">療效評估與續用規範</h4>
-                  <p className="text-gray-700 leading-relaxed">{criteriaData[activeTab].efficacy}</p>
+                <div className="mt-4 p-3 bg-gray-50 rounded border border-gray-200 font-mono text-xs overflow-x-auto text-gray-800">
+                  PASI = 0.1*(E_h+I_h+D_h)*A_h + 0.3*(E_t+I_t+D_t)*A_t + 0.2*(E_u+I_u+D_u)*A_u + 0.4*(E_l+I_l+D_l)*A_l
                 </div>
               </div>
+            </div>
+          );
+        }
+        
+        if (activeTab === 'PsA-P') {
+          return (
+            <div className="mt-6 border border-gray-200 rounded-lg overflow-hidden">
+              <div className="bg-gray-100 px-4 py-3 border-b border-gray-200 flex items-center">
+                <Stethoscope className="w-5 h-5 mr-2 text-gray-600" />
+                <h4 className="font-bold text-gray-800">附表二十二之二 & 二十二之三：乾癬性關節炎評估表</h4>
+              </div>
+              <div className="p-4 bg-white text-sm text-gray-700 space-y-4">
+                <div>
+                  <strong className="text-gray-900 block mb-1">關節評估指標：</strong>
+                  <p>評估 78 個可能疼痛關節及 76 個可能腫脹關節；另包含醫師與病人整體評估 (0-5分)。</p>
+                </div>
+                <div>
+                  <strong className="text-gray-900 block mb-1">DMARDs 標準目標劑量 (充分治療門檻)：</strong>
+                  <ul className="grid grid-cols-2 gap-2 mt-1">
+                    <li>• Sulfasalazine: 2g/天</li>
+                    <li>• Methotrexate: 15 mg/週</li>
+                    <li>• Cyclosporine: 3-5 mg/kg/天</li>
+                    <li>• Leflunomide: 20 mg/天</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          );
+        }
 
-              {renderDrugSpecificInfo()}
-              {renderEmbeddedForms()}
+        if (activeTab === 'AS' || activeTab === 'PsA-A') {
+          return (
+            <div className="mt-6 border border-gray-200 rounded-lg overflow-hidden">
+              <div className="bg-gray-100 px-4 py-3 border-b border-gray-200 flex items-center">
+                <Activity className="w-5 h-5 mr-2 text-gray-600" />
+                <h4 className="font-bold text-gray-800">活動性疾病與療效評估指標</h4>
+              </div>
+              <div className="p-4 bg-white text-sm text-gray-700">
+                <p>需連續記錄二次檢查 (間隔至少四週)：</p>
+                <ul className="list-disc pl-5 mt-2 space-y-1">
+                  <li><strong>BASDAI 分數</strong> (需 ≥ 6)</li>
+                  <li><strong>ESR</strong> (需 &gt; 28 mm/1 hr)</li>
+                  <li><strong>CRP</strong> (需 &gt; 1 mg/dL)</li>
+                </ul>
+              </div>
+            </div>
+          );
+        }
+        return null;
+      };
 
+      return (
+        <div className="max-w-6xl mx-auto p-6 bg-gray-50 min-h-screen font-sans">
+          <header className="mb-8">
+            <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">台灣健保生物製劑給付審查工具 (免安裝版)</h1>
+          </header>
+
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div className="lg:col-span-1 space-y-4">
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">選擇比較藥品</h2>
+                <div className="space-y-2">
+                  {drugs.map(drug => (
+                    <button
+                      key={drug.id}
+                      onClick={() => setSelectedDrug(drug.id)}
+                      className={`w-full text-left px-4 py-3 rounded-lg border transition-all duration-200 font-medium ${
+                        selectedDrug === drug.id
+                          ? 'bg-indigo-50 border-indigo-500 text-indigo-700 shadow-sm ring-1 ring-indigo-500'
+                          : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      {drug.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-3">
+              <div className="flex flex-wrap gap-2 mb-6">
+                {tabs.map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
+                      activeTab === tab.id
+                        ? 'bg-indigo-600 text-white shadow-md'
+                        : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
+                    }`}
+                  >
+                    {tab.name}
+                  </button>
+                ))}
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="p-6">
+                  <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <Info className="w-6 h-6 mr-2 text-indigo-600" />
+                    {tabs.find(t => t.id === activeTab).name} 健保申請條件
+                  </h2>
+                  
+                  <div className="space-y-6">
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">初次申請條件 (需符合所有項目)</h4>
+                      <ul className="space-y-3">
+                        {criteriaData[activeTab].general.map((item, idx) => (
+                          <li key={idx} className="flex items-start text-gray-700 leading-relaxed">
+                            <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 mr-3"></span>
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                      <h4 className="text-md font-semibold text-gray-800 mb-2">療效評估與續用規範</h4>
+                      <p className="text-gray-700 leading-relaxed">{criteriaData[activeTab].efficacy}</p>
+                    </div>
+                  </div>
+
+                  {renderDrugSpecificInfo()}
+                  {renderEmbeddedForms()}
+
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  );
-};
+      );
+    };
 
-export default NHITool;
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<NHITool />);
+  </script>
+</body>
+</html>
