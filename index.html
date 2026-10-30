@@ -37,6 +37,9 @@
 
       const drugs = [
         { id: 'Bimzelx', name: 'Bimzelx (本能適)' },
+        { id: 'Cosentyx', name: 'Cosentyx (可善挺)' },
+        { id: 'Taltz', name: 'Taltz (達癬治)' },
+        { id: 'Lumicef', name: 'Lumicef (立美西膚)' },
         { id: 'Skyrizi', name: 'Skyrizi (喜開悅)' },
         { id: 'Tremfya', name: 'Tremfya (特諾雅)' },
         { id: 'Stelara', name: 'Stelara (喜達諾)' }
@@ -103,14 +106,14 @@
               <ul className="space-y-2 text-blue-900">
                 {activeTab.startsWith('PsO') ? (
                   <>
-                    <li className="flex items-start"><ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> <b>專屬維持劑量：</b> 起始於第 0, 4, 8, 12, 16 週投予 320mg，之後進入維持期 <b>每 8 週投予 320mg</b>[cite: 5, 6]。</li>
-                    <li className="flex items-start"><ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> <b>早期續用門檻：</b> 於初次療程之第 16 週評估時，<b>至少有 PASI 25 療效</b> 即可過關[cite: 6]。</li>
-                    <li className="flex items-start"><ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> <b>常規續用門檻：</b> 重複療程再次申請時，與初次治療前之療效 <b>達 PASI 50</b> 即可續用，留存率高[cite: 6]。</li>
+                    <li className="flex items-start"><ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> <span><b>專屬維持劑量：</b> 起始於第 0, 4, 8, 12, 16 週投予 320mg，之後進入維持期 <b>每 8 週投予 320mg</b>[cite: 5, 6]。</span></li>
+                    <li className="flex items-start"><ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> <span><b>早期續用門檻：</b> 於初次療程之第 16 週評估時，<b>至少有 PASI 25 療效</b> 即可過關[cite: 6]。</span></li>
+                    <li className="flex items-start"><ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> <span><b>常規續用門檻：</b> 重複療程再次申請時，與初次治療前之療效 <b>達 PASI 50</b> 即可續用，留存率高[cite: 6]。</span></li>
                   </>
                 ) : (
                   <>
-                    <li className="flex items-start"><ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> <b>穩定施打：</b> 每次使用劑量為 160mg，<b>每 4 週投予 160mg</b> 劑量[cite: 1]。</li>
-                    <li className="flex items-start"><ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> <b>前線優勢：</b> 於 PsA 治療位階具優勢，不需像 IL-23 抑制劑受限於必須先失敗其他生物製劑[cite: 3]。</li>
+                    <li className="flex items-start"><ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> <span><b>穩定施打：</b> 每次使用劑量為 160mg，<b>每 4 週投予 160mg</b> 劑量[cite: 1]。</span></li>
+                    <li className="flex items-start"><ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> <span><b>前線優勢：</b> 於 PsA 治療位階具優勢，不需像 IL-23 抑制劑受限於必須先失敗其他生物製劑[cite: 3]。</span></li>
                   </>
                 )}
               </ul>
@@ -118,8 +121,31 @@
           );
         }
 
+        if (['Cosentyx', 'Taltz', 'Lumicef'].includes(selectedDrug)) {
+          return (
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-5 mt-6 shadow-sm">
+              <h3 className="flex items-center text-lg font-bold text-gray-800 mb-3">
+                <Info className="w-5 h-5 mr-2 text-gray-600" />
+                給付評估資訊 ({selectedDrug})
+              </h3>
+              <ul className="space-y-2 text-gray-800">
+                {activeTab.startsWith('PsA') ? (
+                  <li className="flex items-start">
+                    <ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> 
+                    <span><b>給付順位優勢：</b> 與 Bimzelx 同為 IL-17 抑制劑，給付順位優於 IL-23 抑制劑，不需受限於先失敗他藥之規定[cite: 3]。</span>
+                  </li>
+                ) : (
+                  <li className="flex items-start">
+                    <ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> 
+                    <span>符合常規生物製劑給付規範[cite: 1]。</span>
+                  </li>
+                )}
+              </ul>
+            </div>
+          );
+        }
+
         if (['Skyrizi', 'Tremfya', 'Stelara'].includes(selectedDrug)) {
-          // 動態設定框框顏色與標題
           let boxColor = "bg-red-50 border-red-200 text-red-900";
           let titleIcon = <AlertCircle className="w-5 h-5 mr-2 text-red-800" />;
           let titleText = `給付限制注意 (${selectedDrug})`;
@@ -129,14 +155,14 @@
             content = (
               <li className="flex items-start font-bold text-red-700">
                 <ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> 
-                無此適應症：本藥品目前無僵直性脊椎炎 (AS) 之健保給付[cite: 1]。
+                <span>無此適應症：本藥品目前無僵直性脊椎炎 (AS) 之健保給付[cite: 1]。</span>
               </li>
             );
           } else if (activeTab.startsWith('PsA')) {
             content = (
               <li className="flex items-start">
                 <ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> 
-                <b>後線條款限制：</b> 申請 IL-23 抑制劑 <b>必須符合抗腫瘤壞死因子 (anti-TNF)、secukinumab、ixekizumab (IL-17)、JAK 等未達療效或無法耐受</b> 之條件[cite: 3]。相較於 Bimzelx，給付順位處於後線。
+                <span><b>後線條款限制：</b> 申請 IL-23 抑制劑 <b>必須符合抗腫瘤壞死因子 (anti-TNF)、secukinumab、ixekizumab (IL-17)、JAK 等未達療效或無法耐受</b> 之條件[cite: 3]。相較於 Bimzelx 及其他 IL-17，給付順位處於後線。</span>
               </li>
             );
           } else if (activeTab.startsWith('PsO')) {
@@ -144,29 +170,27 @@
               content = (
                 <li className="flex items-start">
                   <ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> 
-                  <b>高標續用門檻：</b> risankizumab 於第 16 週須先行評估 <b>至少有 PASI 75 療效</b>，再次申請亦須達 PASI 75；對比 Bimzelx 的 PASI 25/50，面臨更高的斷藥風險[cite: 6, 23]。
+                  <span><b>高標續用門檻：</b> risankizumab 於第 16 週須先行評估 <b>至少有 PASI 75 療效</b>，再次申請亦須達 PASI 75；對比 Bimzelx 的 PASI 25/50，面臨更高的斷藥風險[cite: 6, 23]。</span>
                 </li>
               );
             } else if (selectedDrug === 'Stelara') {
-              // Stelara 在 PsO 轉為中性灰框
               boxColor = "bg-gray-50 border-gray-200 text-gray-800";
               titleIcon = <Info className="w-5 h-5 mr-2 text-gray-600" />;
               titleText = `給付評估時程 (${selectedDrug})`;
               content = (
                 <li className="flex items-start">
                   <ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> 
-                  <b>常規評估門檻：</b> 依健保規定，Ustekinumab 於初次療程之 <b>第 16 週</b> 評估時，至少需有 PASI 25 療效[cite: 30]。
+                  <span><b>常規評估門檻：</b> 依健保規定，Ustekinumab 於初次療程之 <b>第 16 週</b> 評估時，至少需有 PASI 25 療效[cite: 30]。</span>
                 </li>
               );
             } else if (selectedDrug === 'Tremfya') {
-              // Tremfya 在 PsO 轉為中性灰框
               boxColor = "bg-gray-50 border-gray-200 text-gray-800";
               titleIcon = <Info className="w-5 h-5 mr-2 text-gray-600" />;
               titleText = `給付評估時程 (${selectedDrug})`;
               content = (
                 <li className="flex items-start">
                   <ArrowRight className="w-4 h-4 mr-2 mt-1 shrink-0"/> 
-                  <b>常規評估門檻：</b> 依健保規定，Guselkumab 於初次療程之 <b>第 12 週</b> 評估時，至少需有 PASI 25 療效[cite: 30]。
+                  <span><b>常規評估門檻：</b> 依健保規定，Guselkumab 於初次療程之 <b>第 12 週</b> 評估時，至少需有 PASI 25 療效[cite: 30]。</span>
                 </li>
               );
             }
@@ -268,7 +292,7 @@
       return (
         <div className="max-w-6xl mx-auto p-6 bg-gray-50 min-h-screen font-sans">
           <header className="mb-8">
-            <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">台灣健保生物製劑給付審查工具 (進階除錯版)</h1>
+            <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">台灣健保生物製劑給付審查工具 (進階排版版)</h1>
           </header>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -324,7 +348,7 @@
                         {criteriaData[activeTab].general.map((item, idx) => (
                           <li key={idx} className="flex items-start text-gray-700 leading-relaxed">
                             <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 mr-3"></span>
-                            {item}
+                            <span>{item}</span>
                           </li>
                         ))}
                       </ul>
